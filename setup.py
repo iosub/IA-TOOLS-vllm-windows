@@ -239,9 +239,21 @@ class cmake_build_ext(build_ext):
 
             if os.environ.get('USE_CUDNN', '0') == '1':
                 cmake_args.append('-DCAFFE2_USE_CUDNN=1')
+                if os.environ.get('CUDNN_LIBRARY_PATH', None):
+                    cmake_args.append(
+                        f'-DCUDNN_LIBRARY_PATH={os.environ.get("CUDNN_LIBRARY_PATH")}'
+                    )
+                if os.environ.get('CUDNN_INCLUDE_PATH', None):
+                    cmake_args.append(
+                        f'-DCUDNN_INCLUDE_PATH={os.environ.get("CUDNN_INCLUDE_PATH")}'
+                    )
 
             if os.environ.get('USE_CUSPARSELT', '0') == '1':
                 cmake_args.append('-DCAFFE2_USE_CUSPARSELT=1')
+                if os.environ.get('CUSPARSELT_LIBRARY_PATH', None):
+                    cmake_args.append(
+                        f'-DCUSPARSELT_LIBRARY_PATH={os.environ.get("CUSPARSELT_LIBRARY_PATH")}'
+                    )
                 if os.environ.get('CUSPARSELT_INCLUDE_PATH', None):
                     cmake_args.append(
                         f'-DCUSPARSELT_INCLUDE_PATH={os.environ.get("CUSPARSELT_INCLUDE_PATH")}'

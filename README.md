@@ -51,7 +51,8 @@ set CUDA_ROOT=CUDA_INSTALLATION_PATH
 ```
 set DISTUTILS_USE_SDK=1
 set VLLM_TARGET_DEVICE=cuda
-set MAX_JOBS=10 (or your desired number to speed up compilation)
+#(replace 10 with your desired cpu threads to use in parallel to speed up compilation)
+set MAX_JOBS=10
 
 #Optional variables:
 
@@ -61,11 +62,14 @@ set CUDSS_LIBRARY_PATH=PATH_TO_CUDSS_INSTALL_DIR\lib\12
 set CUDSS_INCLUDE_PATH=PATH_TO_CUDSS_INSTALL_DIR\include
 
 #To include cuSPARSELt (only if you have cuSPARSELt installed)
-set CUSPARSELT_INCLUDE_PATH=PATH_TO_CUSPARSELT_INSTALL_DIR\include 
 set USE_CUSPARSELT=1
+set CUSPARSELT_INCLUDE_PATH=PATH_TO_CUSPARSELT_INSTALL_DIR\include
+set CUSPARSELT_LIBRARY_PATH=PATH_TO_CUSPARSELT_INSTALL_DIR\lib
 
 #To include cuDNN:
 set USE_CUDNN=1
+set CUDNN_LIBRARY_PATH=PATH_TO_CUDNN_INSTALL_DIR\lib\CUDNN_CUDA_VERSION\x64
+set CUDNN_INCLUDE_PATH=PATH_TO_CUDNN_INSTALL_DIR\include\CUDNN_CUDA_VERSION
 
 #Flash Attention v3 build has been disabled inside WSL2 and Windows due to compiler being killed on WSL2, and extremely long compiling times on Windows. Hopper is not available on Windows, so FA3 has no sense anyway. 
 #Build can be forcefully enabled using the following environment var:
@@ -82,6 +86,7 @@ python use_existing_torch.py
 pip install -r requirements/build.txt
 pip install -r requirements/windows.txt
 pip install . --no-build-isolation
+
 ```
 
 ---
