@@ -15,6 +15,76 @@ Easy, fast, and cheap LLM serving for everyone
 
 ---
 
+## vLLM for Windows
+
+This repository is a fork of vLLM and will be updated when new release versions of vLLM are published, until vLLM decides to support Windows oficially (see https://github.com/vllm-project/vllm/issues/14981 / https://github.com/vllm-project/vllm/pull/14891).
+
+**Don't open a new Issue to request a specific commit build. Wait for a new stable release.**
+
+**Don't open Issues for general vLLM questions or non Windows related problems. Only Windows specific issues.** Any Issue opened that is not Windows specific will be closed automatically.
+
+**Don't request a wheel for your specific environment.** Currently, the only wheels I will publish are for Python 3.12 + CUDA 12.4 + torch 2.6.0. If you have another versions, build your own wheel from source following the instructions below.
+
+### Windows instructions:
+
+#### Installing an existing release wheel:
+
+1. Ensure that you have the correct Python and CUDA version of the wheel. The Python and CUDA version of the wheel is specified in the release version
+2. Download the wheel from the release version of your preference
+3. Install it with ```pip install DOWNLOADED_WHEEL_PATH```
+
+#### Building from source:
+
+A Visual Studio 2019 or newer is required to launch the compiler x64 environment. The installation path is referred in the instructions as VISUAL_STUDIO_INSTALL_PATH.
+
+CUDA path will be found automatically if you have the bin folder in your PATH, or have the CUDA installation path settled on well-known environment vars like CUDA_ROOT, CUDA_HOME or CUDA_PATH.
+
+If none of these are present, make sure to set the environment variable before starting the build:
+set CUDA_ROOT=CUDA_INSTALLATION_PATH
+
+1. Open a Command Line (cmd.exe)
+2. Clone the vLLM repository: ```cd C:\ & git clone https://github.com/SystemPanic/vllm-windows.git```
+3. Execute (in cmd) ```VISUAL_STUDIO_INSTALL_PATH\VC\Auxiliary\Build\vcvarsall.bat x64```
+4. Change the working directory to the cloned repository path, for example: ```cd C:\vllm-windows```
+5. Set the following environment variables:
+
+```
+set DISTUTILS_USE_SDK=1
+set VLLM_TARGET_DEVICE=cuda
+set MAX_JOBS=10 (or your desired number to speed up compilation)
+
+#Optional variables:
+
+#To include cuDSS (only if you have cuDSS installed)
+set USE_CUDSS=1
+set CUDSS_LIBRARY_PATH=PATH_TO_CUDSS_INSTALL_DIR\lib\12
+set CUDSS_INCLUDE_PATH=PATH_TO_CUDSS_INSTALL_DIR\include
+
+#To include cuSPARSELt (only if you have cuSPARSELt installed)
+set CUSPARSELT_INCLUDE_PATH=PATH_TO_CUSPARSELT_INSTALL_DIR\include 
+set USE_CUSPARSELT=1
+
+#To include cuDNN:
+set USE_CUDNN=1
+
+#Flash Attention v3 build has been disabled inside WSL2 and Windows due to compiler being killed on WSL2, and extremely long compiling times on Windows. Hopper is not available on Windows, so FA3 has no sense anyway. 
+#Build can be forcefully enabled using the following environment var:
+set VLLM_FORCE_FA3_WINDOWS_BUILD=1
+
+```
+6. Build & install:
+```
+#With vLLM torch version
+pip install . --no-build-isolation
+
+#With currently installed torch version
+python use_existing_torch.py
+pip install -r requirements/build.txt
+pip install . --no-build-isolation
+```
+
+---
+
 [2025/03] We are collaborating with Ollama to host an [Inference Night](https://lu.ma/vllm-ollama) at Y Combinator in San Francisco on Thursday, March 27, at 6 PM. Discuss all things inference local or data center!
 
 [2025/04] We're hosting our first-ever *vLLM Asia Developer Day* in Singapore on *April 3rd*! This is a full-day event (9 AM - 9 PM SGT) in partnership with SGInnovate, AMD, and Embedded LLM. Meet the vLLM team and learn about LLM inference for RL, MI300X, and more! [Register Now](https://www.sginnovate.com/event/limited-availability-morning-evening-slots-remaining-inaugural-vllm-asia-developer-day)
