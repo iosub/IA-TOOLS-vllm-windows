@@ -17,13 +17,13 @@ Easy, fast, and cheap LLM serving for everyone
 
 ## vLLM for Windows
 
-This repository is a fork of vLLM and will be updated when new release versions of vLLM are published, until vLLM decides to support Windows oficially (see https://github.com/vllm-project/vllm/issues/14981 / https://github.com/vllm-project/vllm/pull/14891).
+This repository is a fork of vLLM and will be updated when new release versions of vLLM are published, until vLLM decides to support Windows officially (see https://github.com/vllm-project/vllm/issues/14981 / https://github.com/vllm-project/vllm/pull/14891).
 
 **Don't open a new Issue to request a specific commit build. Wait for a new stable release.**
 
 **Don't open Issues for general vLLM questions or non Windows related problems. Only Windows specific issues.** Any Issue opened that is not Windows specific will be closed automatically.
 
-**Don't request a wheel for your specific environment.** Currently, the only wheels I will publish are for Python 3.12 + CUDA 12.4 + torch 2.6.0. If you have another versions, build your own wheel from source following the instructions below.
+**Don't request a wheel for your specific environment.** Currently, the only wheels I will publish are for Python 3.12 + CUDA 12.4 + torch 2.6.0. If you have another versions, build your own wheel from source by following the instructions below.
 
 ### Windows instructions:
 
