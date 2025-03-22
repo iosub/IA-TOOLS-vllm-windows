@@ -37,12 +37,14 @@ envs = load_module_from_path('envs', os.path.join(ROOT_DIR, 'vllm', 'envs.py'))
 
 VLLM_TARGET_DEVICE = envs.VLLM_TARGET_DEVICE
 
+IS_WINDOWS = platform.system() == "Windows"
+
 if sys.platform.startswith("darwin") and VLLM_TARGET_DEVICE != "cpu":
     logger.warning(
         "VLLM_TARGET_DEVICE automatically set to `cpu` due to macOS")
     VLLM_TARGET_DEVICE = "cpu"
 elif not (sys.platform.startswith("linux") or sys.platform.startswith("darwin")
-          or platform.system() == "Windows"):
+          or IS_WINDOWS):
     logger.warning(
         "vLLM only supports Linux platform (including WSL), Windows and MacOS."
         "Building on %s, "
@@ -60,7 +62,7 @@ MAIN_CUDA_VERSION = "12.4"
 IS_WSL = ("microsoft-standard-WSL2" in platform.uname().release
           or "-Microsoft" in platform.uname().release)
 
-if ((platform.system() == "Windows" or IS_WSL)
+if ((IS_WINDOWS or IS_WSL)
         and os.environ.get("VLLM_FORCE_FA3_WINDOWS_BUILD", "0") != "1"):
     # FA3 CAUSES COMPILER CRASH ON WSL2 AND WINDOWS, DISABLE IT
     os.environ['VLLM_DISABLE_FA3_BUILD'] = "1"
@@ -180,7 +182,7 @@ class cmake_build_ext(build_ext):
         # Pass the python executable to cmake so it can find an exact
         # match.
         python_exec_path = sys.executable
-        if platform.system() == "Windows":
+        if IS_WINDOWS:
             python_exec_path = python_exec_path.replace('\\', '\\\\')
 
         cmake_args += ['-DVLLM_PYTHON_EXECUTABLE={}'.format(python_exec_path)]
@@ -708,6 +710,10 @@ def get_requirements() -> list[str]:
         raise ValueError(
             "Unsupported platform, please use CUDA, ROCm, Neuron, HPU, "
             "OpenVINO, or CPU.")
+
+    if IS_WINDOWS:
+        requirements.extend(_read_requirements("windows.txt"))
+
     return requirements
 
 

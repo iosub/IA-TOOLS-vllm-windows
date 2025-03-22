@@ -80,6 +80,7 @@ pip install . --no-build-isolation
 #With currently installed torch version
 python use_existing_torch.py
 pip install -r requirements/build.txt
+pip install -r requirements/windows.txt
 pip install . --no-build-isolation
 ```
 
