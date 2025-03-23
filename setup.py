@@ -164,7 +164,8 @@ class cmake_build_ext(build_ext):
         if verbose:
             cmake_args += ['-DCMAKE_VERBOSE_MAKEFILE=ON']
 
-        if is_sccache_available():
+        # Prefer ccache over sccache on Windows, is more stable and cache can be cleared easily after use
+        if is_sccache_available() and (not IS_WINDOWS or not is_ccache_available()):
             cmake_args += [
                 '-DCMAKE_C_COMPILER_LAUNCHER=sccache',
                 '-DCMAKE_CXX_COMPILER_LAUNCHER=sccache',

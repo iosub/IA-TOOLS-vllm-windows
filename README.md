@@ -78,11 +78,12 @@ set VLLM_FORCE_FA3_WINDOWS_BUILD=1
 ```
 6. Build & install:
 ```
-#With vLLM torch version
-pip install . --no-build-isolation
+#With torch 2.6.0 cuda 12.4 (change cu124 with your installed CUDA version)
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124
 
-#With currently installed torch version
+#With your already installed torch cuda version (make sure you have torch cuda installed if you use a virtual environment)
 python use_existing_torch.py
+
 pip install -r requirements/build.txt
 pip install -r requirements/windows.txt
 pip install . --no-build-isolation
