@@ -45,7 +45,7 @@ __device__ __forceinline__ fp8_type scaled_fp8_conversion(float const val,
     x = val / scale;
   }
   float r =
-      fmax(-quant_type_max_v<fp8_type>, fmin(x, quant_type_max_v<fp8_type>));
+      fmax(-quant_type_max<fp8_type>::val(), fmin(x, quant_type_max<fp8_type>::val()));
 #ifndef USE_ROCM
   return static_cast<fp8_type>(r);
 #else
@@ -91,7 +91,7 @@ __global__ void segmented_max_reduction(float* __restrict__ scale,
   // Finally, since cache[0] contains the maximum for this thread block,
   // atomically write the max to the target location
   if (threadIdx.x == 0) {
-    atomicMaxFloat(scale, cache[0] / quant_type_max_v<fp8_type>);
+    atomicMaxFloat(scale, cache[0] / quant_type_max<fp8_type>::val());
   }
 }
 

@@ -2080,7 +2080,7 @@ bool gptq_marlin_mm_u4b8_256(
     int4* C_ptr, int4* C_tmp_ptr, const int4* s_ptr, const int4* zp_ptr,
     const int* g_idx_ptr, int max_shared_mem, cudaStream_t stream, int blocks,
     int num_groups, int prob_m, int prob_n, int prob_k, int* locks,
-    bool use_fp32_reduce, bool use_atomic_add) {
+    bool use_fp32_reduce, bool use_atomic_add, int lda) {
   bool skipped = false;
   if (false) {
   }
@@ -2100,7 +2100,7 @@ bool gptq_marlin_mm_u4b8_128(
     int4* C_ptr, int4* C_tmp_ptr, const int4* s_ptr, const int4* zp_ptr,
     const int* g_idx_ptr, int max_shared_mem, cudaStream_t stream, int blocks,
     int num_groups, int prob_m, int prob_n, int prob_k, int* locks,
-    bool use_fp32_reduce, bool use_atomic_add) {
+    bool use_fp32_reduce, bool use_atomic_add, int lda) {
   bool skipped = false;
   if (false) {
   }
@@ -2120,7 +2120,7 @@ bool gptq_marlin_mm_u8b128_256(
     int4* C_ptr, int4* C_tmp_ptr, const int4* s_ptr, const int4* zp_ptr,
     const int* g_idx_ptr, int max_shared_mem, cudaStream_t stream, int blocks,
     int num_groups, int prob_m, int prob_n, int prob_k, int* locks,
-    bool use_fp32_reduce, bool use_atomic_add) {
+    bool use_fp32_reduce, bool use_atomic_add, int lda) {
   bool skipped = false;
   if (false) {
   }
@@ -2140,7 +2140,7 @@ bool gptq_marlin_mm_u8b128_128(
     int4* C_ptr, int4* C_tmp_ptr, const int4* s_ptr, const int4* zp_ptr,
     const int* g_idx_ptr, int max_shared_mem, cudaStream_t stream, int blocks,
     int num_groups, int prob_m, int prob_n, int prob_k, int* locks,
-    bool use_fp32_reduce, bool use_atomic_add) {
+    bool use_fp32_reduce, bool use_atomic_add, int lda) {
   bool skipped = false;
   if (false) {
   }
@@ -2160,7 +2160,7 @@ bool awq_marlin_mm_u4_256(
     int4* C_ptr, int4* C_tmp_ptr, const int4* s_ptr, const int4* zp_ptr,
     const int* g_idx_ptr, int max_shared_mem, cudaStream_t stream, int blocks,
     int num_groups, int prob_m, int prob_n, int prob_k, int* locks,
-    bool use_fp32_reduce, bool use_atomic_add) {
+    bool use_fp32_reduce, bool use_atomic_add, int lda) {
   bool skipped = false;
   if (false) {
   }
@@ -2180,7 +2180,7 @@ bool awq_marlin_mm_u4_128(
     int4* C_ptr, int4* C_tmp_ptr, const int4* s_ptr, const int4* zp_ptr,
     const int* g_idx_ptr, int max_shared_mem, cudaStream_t stream, int blocks,
     int num_groups, int prob_m, int prob_n, int prob_k, int* locks,
-    bool use_fp32_reduce, bool use_atomic_add) {
+    bool use_fp32_reduce, bool use_atomic_add, int lda) {
   bool skipped = false;
   if (false) {
   }
@@ -2200,7 +2200,7 @@ bool awq_marlin_mm_u8_256(
     int4* C_ptr, int4* C_tmp_ptr, const int4* s_ptr, const int4* zp_ptr,
     const int* g_idx_ptr, int max_shared_mem, cudaStream_t stream, int blocks,
     int num_groups, int prob_m, int prob_n, int prob_k, int* locks,
-    bool use_fp32_reduce, bool use_atomic_add) {
+    bool use_fp32_reduce, bool use_atomic_add, int lda) {
   bool skipped = false;
   if (false) {
   }
@@ -2220,7 +2220,7 @@ bool awq_marlin_mm_u8_128(
     int4* C_ptr, int4* C_tmp_ptr, const int4* s_ptr, const int4* zp_ptr,
     const int* g_idx_ptr, int max_shared_mem, cudaStream_t stream, int blocks,
     int num_groups, int prob_m, int prob_n, int prob_k, int* locks,
-    bool use_fp32_reduce, bool use_atomic_add) {
+    bool use_fp32_reduce, bool use_atomic_add, int lda) {
   bool skipped = false;
   if (false) {
   }
@@ -2240,7 +2240,7 @@ bool hqq_marlin_mm_u4_256(
     int4* C_ptr, int4* C_tmp_ptr, const int4* s_ptr, const int4* zp_ptr,
     const int* g_idx_ptr, int max_shared_mem, cudaStream_t stream, int blocks,
     int num_groups, int prob_m, int prob_n, int prob_k, int* locks,
-    bool use_fp32_reduce, bool use_atomic_add) {
+    bool use_fp32_reduce, bool use_atomic_add, int lda) {
   bool skipped = false;
   if (false) {
   }
@@ -2260,7 +2260,7 @@ bool hqq_marlin_mm_u4_128(
     int4* C_ptr, int4* C_tmp_ptr, const int4* s_ptr, const int4* zp_ptr,
     const int* g_idx_ptr, int max_shared_mem, cudaStream_t stream, int blocks,
     int num_groups, int prob_m, int prob_n, int prob_k, int* locks,
-    bool use_fp32_reduce, bool use_atomic_add) {
+    bool use_fp32_reduce, bool use_atomic_add, int lda) {
   bool skipped = false;
   if (false) {
   }
@@ -2420,61 +2420,61 @@ void marlin_mm(const void* A, const void* B, void* C, void* C_tmp, void* s,
             num_threads, has_zp, group_blocks, has_act_order, is_zp_float,
             A_ptr, B_ptr, C_ptr, C_tmp_ptr, s_ptr, zp_ptr, g_idx_ptr,
             max_shared_mem, stream, blocks, num_groups, prob_m, prob_n, prob_k,
-            locks, use_fp32_reduce, use_atomic_add) &&
+            locks, use_fp32_reduce, use_atomic_add, lda) &&
         gptq_marlin_mm_u4b8_128<scalar_t>(
             q_type, thread_m_blocks, thread_n_blocks, thread_k_blocks,
             num_threads, has_zp, group_blocks, has_act_order, is_zp_float,
             A_ptr, B_ptr, C_ptr, C_tmp_ptr, s_ptr, zp_ptr, g_idx_ptr,
             max_shared_mem, stream, blocks, num_groups, prob_m, prob_n, prob_k,
-            locks, use_fp32_reduce, use_atomic_add) &&
+            locks, use_fp32_reduce, use_atomic_add, lda) &&
         gptq_marlin_mm_u8b128_256<scalar_t>(
             q_type, thread_m_blocks, thread_n_blocks, thread_k_blocks,
             num_threads, has_zp, group_blocks, has_act_order, is_zp_float,
             A_ptr, B_ptr, C_ptr, C_tmp_ptr, s_ptr, zp_ptr, g_idx_ptr,
             max_shared_mem, stream, blocks, num_groups, prob_m, prob_n, prob_k,
-            locks, use_fp32_reduce, use_atomic_add) &&
+            locks, use_fp32_reduce, use_atomic_add, lda) &&
         gptq_marlin_mm_u8b128_128<scalar_t>(
             q_type, thread_m_blocks, thread_n_blocks, thread_k_blocks,
             num_threads, has_zp, group_blocks, has_act_order, is_zp_float,
             A_ptr, B_ptr, C_ptr, C_tmp_ptr, s_ptr, zp_ptr, g_idx_ptr,
             max_shared_mem, stream, blocks, num_groups, prob_m, prob_n, prob_k,
-            locks, use_fp32_reduce, use_atomic_add) &&
+            locks, use_fp32_reduce, use_atomic_add, lda) &&
         awq_marlin_mm_u4_256<scalar_t>(
             q_type, thread_m_blocks, thread_n_blocks, thread_k_blocks,
             num_threads, has_zp, group_blocks, has_act_order, is_zp_float,
             A_ptr, B_ptr, C_ptr, C_tmp_ptr, s_ptr, zp_ptr, g_idx_ptr,
             max_shared_mem, stream, blocks, num_groups, prob_m, prob_n, prob_k,
-            locks, use_fp32_reduce, use_atomic_add) &&
+            locks, use_fp32_reduce, use_atomic_add, lda) &&
         awq_marlin_mm_u4_128<scalar_t>(
             q_type, thread_m_blocks, thread_n_blocks, thread_k_blocks,
             num_threads, has_zp, group_blocks, has_act_order, is_zp_float,
             A_ptr, B_ptr, C_ptr, C_tmp_ptr, s_ptr, zp_ptr, g_idx_ptr,
             max_shared_mem, stream, blocks, num_groups, prob_m, prob_n, prob_k,
-            locks, use_fp32_reduce, use_atomic_add) &&
+            locks, use_fp32_reduce, use_atomic_add, lda) &&
         awq_marlin_mm_u8_256<scalar_t>(
             q_type, thread_m_blocks, thread_n_blocks, thread_k_blocks,
             num_threads, has_zp, group_blocks, has_act_order, is_zp_float,
             A_ptr, B_ptr, C_ptr, C_tmp_ptr, s_ptr, zp_ptr, g_idx_ptr,
             max_shared_mem, stream, blocks, num_groups, prob_m, prob_n, prob_k,
-            locks, use_fp32_reduce, use_atomic_add) &&
+            locks, use_fp32_reduce, use_atomic_add, lda) &&
         awq_marlin_mm_u8_128<scalar_t>(
             q_type, thread_m_blocks, thread_n_blocks, thread_k_blocks,
             num_threads, has_zp, group_blocks, has_act_order, is_zp_float,
             A_ptr, B_ptr, C_ptr, C_tmp_ptr, s_ptr, zp_ptr, g_idx_ptr,
             max_shared_mem, stream, blocks, num_groups, prob_m, prob_n, prob_k,
-            locks, use_fp32_reduce, use_atomic_add) &&
+            locks, use_fp32_reduce, use_atomic_add, lda) &&
         hqq_marlin_mm_u4_256<scalar_t>(
             q_type, thread_m_blocks, thread_n_blocks, thread_k_blocks,
             num_threads, has_zp, group_blocks, has_act_order, is_zp_float,
             A_ptr, B_ptr, C_ptr, C_tmp_ptr, s_ptr, zp_ptr, g_idx_ptr,
             max_shared_mem, stream, blocks, num_groups, prob_m, prob_n, prob_k,
-            locks, use_fp32_reduce, use_atomic_add) &&
+            locks, use_fp32_reduce, use_atomic_add, lda) &&
         hqq_marlin_mm_u4_128<scalar_t>(
             q_type, thread_m_blocks, thread_n_blocks, thread_k_blocks,
             num_threads, has_zp, group_blocks, has_act_order, is_zp_float,
             A_ptr, B_ptr, C_ptr, C_tmp_ptr, s_ptr, zp_ptr, g_idx_ptr,
             max_shared_mem, stream, blocks, num_groups, prob_m, prob_n, prob_k,
-            locks, use_fp32_reduce, use_atomic_add)) {
+            locks, use_fp32_reduce, use_atomic_add, lda)) {
       TORCH_CHECK(false, "Unsupported shapes: MNK = [", prob_m, ", ", prob_n,
                   ", ", prob_k, "]", ", has_act_order = ", has_act_order,
                   ", num_groups = ", num_groups, ", group_size = ", group_size,

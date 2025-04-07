@@ -2,6 +2,7 @@
 
 import os
 import pickle
+import platform
 import sys
 import time
 from contextlib import contextmanager
@@ -31,7 +32,7 @@ logger = init_logger(__name__)
 # os.sched_yield() does not release the GIL, so we fall back to time.sleep(0)
 USE_SCHED_YIELD = ((sys.version_info[:3] >= (3, 11, 1))
                    or (sys.version_info[:2] == (3, 10)
-                       and sys.version_info[2] >= 8))
+                       and sys.version_info[2] >= 8)) and platform.system() != "Windows"
 
 
 def sched_yield():

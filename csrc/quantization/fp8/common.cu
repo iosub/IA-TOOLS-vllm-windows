@@ -64,7 +64,7 @@ __global__ void dynamic_per_token_scaled_fp8_quant_kernel(
       token_scale = block_absmax_val_maybe;
     }
     // token scale computation
-    token_scale = max(token_scale / quant_type_max_v<fp8_type>,
+    token_scale = max(token_scale / quant_type_max<fp8_type>::val(),
                       min_scaling_factor<fp8_type>::val());
     scale[token_idx] = token_scale;
   }
