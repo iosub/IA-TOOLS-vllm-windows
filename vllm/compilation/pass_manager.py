@@ -14,6 +14,7 @@ from .noop_elimination import NoOpEliminationPass
 
 logger = init_logger(__name__)
 
+
 class PostGradPassManager(CustomGraphPass):
     """
     The pass manager for post-grad passes.

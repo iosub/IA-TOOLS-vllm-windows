@@ -12,9 +12,9 @@
 #ifndef USE_ROCM
   #include <c10/util/Float8_e4m3fn.h>
   #ifdef _WIN32
-  #define MAYBE_HOST_DEVICE C10_DEVICE
+    #define MAYBE_HOST_DEVICE C10_DEVICE
   #else
-  #define MAYBE_HOST_DEVICE C10_HOST_DEVICE
+    #define MAYBE_HOST_DEVICE C10_HOST_DEVICE
   #endif
 #else
   #include <ATen/hip/HIPContext.h>

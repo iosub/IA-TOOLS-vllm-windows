@@ -19,13 +19,16 @@
 // This function is defined at file scope so that the preprocessor directives
 // are not embedded inside a lambda.
 template <typename KernelT>
-void set_max_dynamic_shared_memory(KernelT kernel, int smem_size) {
-    if (smem_size >= 48 * 1024) {
+void set_max_dynamic_shared_memory(KernelT kernel, int kSmemSize) {
+    if (kSmemSize >= 48 * 1024) {
 #ifndef USE_ROCM
-        C10_CUDA_CHECK(cudaFuncSetAttribute(kernel, cudaFuncAttributeMaxDynamicSharedMemorySize, smem_size));
+        C10_CUDA_CHECK(cudaFuncSetAttribute(
+            kernel, cudaFuncAttributeMaxDynamicSharedMemorySize, kSmemSize));
 #else
-        C10_CUDA_CHECK(cudaFuncSetAttribute((void*)kernel, cudaFuncAttributeMaxDynamicSharedMemorySize, smem_size));
-        std::cerr << "Warning (causal_conv1d fwd launch): attempting to set maxDynamicSharedMemorySize on an AMD GPU which is currently a non-op (in ROCm versions <= 6.1). This might lead to undefined behavior.\n" << std::endl;
+        // There is a slight signature discrepancy in HIP and CUDA "FuncSetAttribute" function.
+        C10_CUDA_CHECK(cudaFuncSetAttribute(
+            (void *) kernel, cudaFuncAttributeMaxDynamicSharedMemorySize, kSmemSize));
+        std::cerr << "Warning (causal_conv1d fwd launch): attempting to set maxDynamicSharedMemorySize on an AMD GPU which is currently a non-op (in ROCm versions <= 6.1). This might lead to undefined behavior. \n" << std::endl;
 #endif
     }
 }
@@ -435,7 +438,7 @@ void causal_conv1d_fwd_kernel(ConvParamsBase params) {
         int final_state_position =  ((seqlen - (kWidth - 1)) - (n_chunks - 1) * kChunkSize);
         // in case the final state is separated between the last "smem_exchange" and 
         // and the one before it (chunk = n_chunks - 1 and chunk = n_chunks - 2), 
-        // (which occurs when `final_state_position` is a non-positivie index)
+        // (which occurs when `final_state_position` is a non-positive index)
         // we load the correct data from smem_exchange from both chunks, the last chunk iteration and the one before it
         if (conv_states != nullptr && final_state_position < 0 && seqlen > kWidth){
             input_t vals_load[kNElts] = {0};
@@ -512,8 +515,8 @@ void causal_conv1d_fwd_launch(ConvParamsBase &params, cudaStream_t stream) {
         dim3 grid(params.batch, params.dim);
 
         auto kernel = &causal_conv1d_fwd_kernel<Ktraits>;
-		
-		set_max_dynamic_shared_memory(kernel, kSmemSize);        
+
+		set_max_dynamic_shared_memory(kernel, kSmemSize);
         kernel<<<grid, Ktraits::kNThreads, kSmemSize, stream>>>(params);
 
         C10_CUDA_KERNEL_LAUNCH_CHECK();

@@ -44,6 +44,7 @@ __device__ __forceinline__ fp8_type scaled_fp8_conversion(float const val,
   } else {
     x = val / scale;
   }
+
   float r =
       fmax(-quant_type_max<fp8_type>::val(), fmin(x, quant_type_max<fp8_type>::val()));
 #ifndef USE_ROCM
