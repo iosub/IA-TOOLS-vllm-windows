@@ -50,6 +50,12 @@ endif()
 FetchContent_MakeAvailable(vllm-flash-attn)
 message(STATUS "vllm-flash-attn is available at ${vllm-flash-attn_SOURCE_DIR}")
 
+if (WIN32)
+  find_package(PythonInterp)
+  find_package(Python)
+  execute_process(COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/fix_cutlass_msvc.py ${vllm-flash-attn_SOURCE_DIR})
+endif()
+
 # Copy over the vllm-flash-attn python files (duplicated for fa2 and fa3, in
 # case only one is built, in the case both are built redundant work is done)
 install(

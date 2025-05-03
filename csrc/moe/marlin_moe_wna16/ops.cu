@@ -405,6 +405,108 @@ bool is_valid_config(thread_config_t const& th_config, int thread_m_blocks,
              NUM_THREADS, true)
 
 template <typename scalar_t>
+bool gptq_marlin_m1_u4b8(
+    MarlinFuncPtr& kernel, const vllm::ScalarType q_type, int thread_m_blocks,
+    int thread_n_blocks, int thread_k_blocks, bool m_block_size_8,
+    bool has_act_order, bool has_zp, int group_blocks, int num_threads, 
+	bool is_zp_float) {
+  bool skipped = false;
+  if (false) {
+  }
+  GPTQ_GET_IF_M1(vllm::kU4B8, 8, 8, 256)
+  GPTQ_GET_IF_M1(vllm::kU4B8, 8, 4, 128)
+  else {
+    skipped = true;
+  }
+  return skipped;
+}
+
+template <typename scalar_t>
+bool gptq_marlin_m234_u4b8(
+    MarlinFuncPtr& kernel, const vllm::ScalarType q_type, int thread_m_blocks,
+    int thread_n_blocks, int thread_k_blocks, bool m_block_size_8,
+    bool has_act_order, bool has_zp, int group_blocks, int num_threads, 
+	bool is_zp_float) {
+  bool skipped = false;
+  if (false) {
+  }
+  GPTQ_GET_IF_M234(vllm::kU4B8, 16, 4, 256)
+  GPTQ_GET_IF_M234(vllm::kU4B8, 8, 4, 128)
+  else {
+    skipped = true;
+  }
+  return skipped;
+}
+
+template <typename scalar_t>
+bool gptq_marlin_m1_u8b128(
+    MarlinFuncPtr& kernel, const vllm::ScalarType q_type, int thread_m_blocks,
+    int thread_n_blocks, int thread_k_blocks, bool m_block_size_8,
+    bool has_act_order, bool has_zp, int group_blocks, int num_threads, 
+	bool is_zp_float) {
+  bool skipped = false;
+  if (false) {
+  }
+  GPTQ_GET_IF_M1(vllm::kU8B128, 8, 8, 256)
+  GPTQ_GET_IF_M1(vllm::kU8B128, 8, 4, 128)
+  else {
+    skipped = true;
+  }
+  return skipped;
+}
+
+template <typename scalar_t>
+bool gptq_marlin_m234_u8b128(
+    MarlinFuncPtr& kernel, const vllm::ScalarType q_type, int thread_m_blocks,
+    int thread_n_blocks, int thread_k_blocks, bool m_block_size_8,
+    bool has_act_order, bool has_zp, int group_blocks, int num_threads, 
+	bool is_zp_float) {
+  bool skipped = false;
+  if (false) {
+  }
+  GPTQ_GET_IF_M234(vllm::kU8B128, 16, 4, 256)
+  GPTQ_GET_IF_M234(vllm::kU8B128, 8, 4, 128)
+  else {
+    skipped = true;
+  }
+  return skipped;
+}
+
+template <typename scalar_t>
+bool awq_marlin_m1_u4(
+    MarlinFuncPtr& kernel, const vllm::ScalarType q_type, int thread_m_blocks,
+    int thread_n_blocks, int thread_k_blocks, bool m_block_size_8,
+    bool has_act_order, bool has_zp, int group_blocks, int num_threads, 
+	bool is_zp_float) {
+  bool skipped = false;
+  if (false) {
+  }
+  AWQ_GET_IF_M1(vllm::kU4, 8, 8, 256)
+  AWQ_GET_IF_M1(vllm::kU4, 8, 4, 128)
+  else {
+    skipped = true;
+  }
+  return skipped;
+}
+
+template <typename scalar_t>
+bool awq_marlin_m234_u4(
+    MarlinFuncPtr& kernel, const vllm::ScalarType q_type, int thread_m_blocks,
+    int thread_n_blocks, int thread_k_blocks, bool m_block_size_8,
+    bool has_act_order, bool has_zp, int group_blocks, int num_threads, 
+	bool is_zp_float) {
+  bool skipped = false;
+  if (false) {
+  }
+  AWQ_GET_IF_M234(vllm::kU4, 16, 4, 256)
+  AWQ_GET_IF_M234(vllm::kU4, 8, 4, 128)
+  else {
+    skipped = true;
+  }
+  return skipped;
+}
+
+template <typename scalar_t>
 MarlinFuncPtr get_marlin_kernel(const vllm::ScalarType q_type,
                                 int thread_m_blocks, int thread_n_blocks,
                                 int thread_k_blocks, bool m_block_size_8,
@@ -413,25 +515,31 @@ MarlinFuncPtr get_marlin_kernel(const vllm::ScalarType q_type,
                                 bool is_zp_float) {
   int num_bits = q_type.size_bits();
   auto kernel = MarlinDefault;
-  if (false) {
-  }
-  GPTQ_GET_IF_M1(vllm::kU4B8, 8, 8, 256)
-  GPTQ_GET_IF_M1(vllm::kU4B8, 8, 4, 128)
-
-  GPTQ_GET_IF_M234(vllm::kU4B8, 16, 4, 256)
-  GPTQ_GET_IF_M234(vllm::kU4B8, 8, 4, 128)
-
-  GPTQ_GET_IF_M1(vllm::kU8B128, 8, 8, 256)
-  GPTQ_GET_IF_M1(vllm::kU8B128, 8, 4, 128)
-
-  GPTQ_GET_IF_M234(vllm::kU8B128, 16, 4, 256)
-  GPTQ_GET_IF_M234(vllm::kU8B128, 8, 4, 128)
-
-  AWQ_GET_IF_M1(vllm::kU4, 8, 8, 256)
-  AWQ_GET_IF_M1(vllm::kU4, 8, 4, 128)
-
-  AWQ_GET_IF_M234(vllm::kU4, 16, 4, 256)
-  AWQ_GET_IF_M234(vllm::kU4, 8, 4, 128)
+  
+  bool skipped = gptq_marlin_m1_u4b8<scalar_t>(
+            kernel, q_type, thread_m_blocks, thread_n_blocks,
+            thread_k_blocks, m_block_size_8, has_act_order, 
+			has_zp, group_blocks, num_threads, is_zp_float) &&
+        gptq_marlin_m234_u4b8<scalar_t>(
+            kernel, q_type, thread_m_blocks, thread_n_blocks,
+            thread_k_blocks, m_block_size_8, has_act_order, 
+			has_zp, group_blocks, num_threads, is_zp_float) &&
+        gptq_marlin_m1_u8b128<scalar_t>(
+            kernel, q_type, thread_m_blocks, thread_n_blocks,
+            thread_k_blocks, m_block_size_8, has_act_order, 
+			has_zp, group_blocks, num_threads, is_zp_float) &&
+        gptq_marlin_m234_u8b128<scalar_t>(
+            kernel, q_type, thread_m_blocks, thread_n_blocks,
+            thread_k_blocks, m_block_size_8, has_act_order, 
+			has_zp, group_blocks, num_threads, is_zp_float) &&
+        awq_marlin_m1_u4<scalar_t>(
+            kernel, q_type, thread_m_blocks, thread_n_blocks,
+            thread_k_blocks, m_block_size_8, has_act_order, 
+			has_zp, group_blocks, num_threads, is_zp_float) &&
+        awq_marlin_m234_u4<scalar_t>(
+            kernel, q_type, thread_m_blocks, thread_n_blocks,
+            thread_k_blocks, m_block_size_8, has_act_order, 
+			has_zp, group_blocks, num_threads, is_zp_float);
 
   return kernel;
 }
