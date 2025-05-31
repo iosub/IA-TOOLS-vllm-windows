@@ -370,9 +370,9 @@ bool is_valid_config(thread_config_t const& th_config, int thread_m_blocks,
 	
 template <typename scalar_t>
 bool common_u4(
-    const vllm::ScalarType q_type, int thread_m_blocks, int thread_n_blocks,
-    int thread_k_blocks, bool m_block_size_8, int num_threads, bool has_zp, 
-	int group_blocks, bool has_act_order, bool is_zp_float) {
+    MarlinFuncPtr& kernel, const vllm::ScalarType q_type, int thread_m_blocks, 
+	int thread_n_blocks, int thread_k_blocks, bool m_block_size_8, int num_threads, 
+	bool has_zp, int group_blocks, bool has_act_order, bool is_zp_float) {
   bool skipped = false;
   if (false) {
   }
@@ -385,9 +385,9 @@ bool common_u4(
 
 template <typename scalar_t>
 bool common_u4b8(
-    const vllm::ScalarType q_type, int thread_m_blocks, int thread_n_blocks,
-    int thread_k_blocks, bool m_block_size_8, int num_threads, bool has_zp, 
-	int group_blocks, bool has_act_order, bool is_zp_float) {
+    MarlinFuncPtr& kernel, const vllm::ScalarType q_type, int thread_m_blocks, 
+	int thread_n_blocks, int thread_k_blocks, bool m_block_size_8, int num_threads, 
+	bool has_zp, int group_blocks, bool has_act_order, bool is_zp_float) {
   bool skipped = false;
   if (false) {
   }
@@ -400,9 +400,9 @@ bool common_u4b8(
 
 template <typename scalar_t>
 bool common_u8b128(
-    const vllm::ScalarType q_type, int thread_m_blocks, int thread_n_blocks,
-    int thread_k_blocks, bool m_block_size_8, int num_threads, bool has_zp, 
-	int group_blocks, bool has_act_order, bool is_zp_float) {
+    MarlinFuncPtr& kernel, const vllm::ScalarType q_type, int thread_m_blocks, 
+	int thread_n_blocks, int thread_k_blocks, bool m_block_size_8, int num_threads, 
+	bool has_zp, int group_blocks, bool has_act_order, bool is_zp_float) {
   bool skipped = false;
   if (false) {
   }
@@ -415,9 +415,9 @@ bool common_u8b128(
 
 template <typename scalar_t>
 bool fp4_fe2m1(
-    const vllm::ScalarType q_type, int thread_m_blocks, int thread_n_blocks,
-    int thread_k_blocks, bool m_block_size_8, int num_threads, bool has_zp, 
-	int group_blocks, bool has_act_order, bool is_zp_float) {
+    MarlinFuncPtr& kernel, const vllm::ScalarType q_type, int thread_m_blocks, 
+	int thread_n_blocks, int thread_k_blocks, bool m_block_size_8, int num_threads, 
+	bool has_zp, int group_blocks, bool has_act_order, bool is_zp_float) {
   bool skipped = false;
   if (false) {
   }
@@ -430,9 +430,9 @@ bool fp4_fe2m1(
 
 template <typename scalar_t>
 bool biggroup_fe4m3(
-    const vllm::ScalarType q_type, int thread_m_blocks, int thread_n_blocks,
-    int thread_k_blocks, bool m_block_size_8, int num_threads, bool has_zp, 
-	int group_blocks, bool has_act_order, bool is_zp_float) {
+    MarlinFuncPtr& kernel, const vllm::ScalarType q_type, int thread_m_blocks, 
+	int thread_n_blocks, int thread_k_blocks, bool m_block_size_8, int num_threads, 
+	bool has_zp, int group_blocks, bool has_act_order, bool is_zp_float) {
   bool skipped = false;
   if (false) {
   }
@@ -445,9 +445,9 @@ bool biggroup_fe4m3(
 
 template <typename scalar_t>
 bool act_u4b8(
-    const vllm::ScalarType q_type, int thread_m_blocks, int thread_n_blocks,
-    int thread_k_blocks, bool m_block_size_8, int num_threads, bool has_zp, 
-	int group_blocks, bool has_act_order, bool is_zp_float) {
+    MarlinFuncPtr& kernel, const vllm::ScalarType q_type, int thread_m_blocks, 
+	int thread_n_blocks, int thread_k_blocks, bool m_block_size_8, int num_threads, 
+	bool has_zp, int group_blocks, bool has_act_order, bool is_zp_float) {
   bool skipped = false;
   if (false) {
   }
@@ -460,9 +460,9 @@ bool act_u4b8(
 
 template <typename scalar_t>
 bool act_u8b128(
-    const vllm::ScalarType q_type, int thread_m_blocks, int thread_n_blocks,
-    int thread_k_blocks, bool m_block_size_8, int num_threads, bool has_zp, 
-	int group_blocks, bool has_act_order, bool is_zp_float) {
+    MarlinFuncPtr& kernel, const vllm::ScalarType q_type, int thread_m_blocks, 
+	int thread_n_blocks, int thread_k_blocks, bool m_block_size_8, int num_threads, 
+	bool has_zp, int group_blocks, bool has_act_order, bool is_zp_float) {
   bool skipped = false;
   if (false) {
   }
@@ -483,27 +483,27 @@ MarlinFuncPtr get_marlin_kernel(const vllm::ScalarType q_type,
   int num_bits = q_type.size_bits();
   auto kernel = MarlinDefault;
 
-  bool skipped = common_u4<scalar_t>(q_type, thread_m_blocks, thread_n_blocks,
-			thread_k_blocks, m_block_size_8, num_threads, has_zp, 
-			group_blocks, has_act_order, is_zp_float) &&
-		common_u4b8<scalar_t>(q_type, thread_m_blocks, thread_n_blocks,
-			thread_k_blocks, m_block_size_8, num_threads, has_zp, 
-			group_blocks, has_act_order, is_zp_float) &&
-		common_u8b128<scalar_t>(q_type, thread_m_blocks, thread_n_blocks,
-			thread_k_blocks, m_block_size_8, num_threads, has_zp, 
-			group_blocks, has_act_order, is_zp_float)
-		fp4_fe2m1<scalar_t>(q_type, thread_m_blocks, thread_n_blocks,
-			thread_k_blocks, m_block_size_8, num_threads, has_zp, 
-			group_blocks, has_act_order, is_zp_float)
-		biggroup_fe4m3(q_type, thread_m_blocks, thread_n_blocks,
-			thread_k_blocks, m_block_size_8, num_threads, has_zp, 
-			group_blocks, has_act_order, is_zp_float)
-		act_u4b8(q_type, thread_m_blocks, thread_n_blocks,
-			thread_k_blocks, m_block_size_8, num_threads, has_zp, 
-			group_blocks, has_act_order, is_zp_float)
-		act_u8b128(q_type, thread_m_blocks, thread_n_blocks,
-			thread_k_blocks, m_block_size_8, num_threads, has_zp, 
-			group_blocks, has_act_order, is_zp_float);
+  bool skipped = common_u4<scalar_t>(kernel, q_type, thread_m_blocks, 
+			thread_n_blocks, thread_k_blocks, m_block_size_8, num_threads, 
+			has_zp, group_blocks, has_act_order, is_zp_float) && 
+		common_u4b8<scalar_t>(kernel, q_type, thread_m_blocks, 
+			thread_n_blocks, thread_k_blocks, m_block_size_8, num_threads, 
+			has_zp, group_blocks, has_act_order, is_zp_float) && 
+		common_u8b128<scalar_t>(kernel, q_type, thread_m_blocks, 
+			thread_n_blocks, thread_k_blocks, m_block_size_8, num_threads, 
+			has_zp, group_blocks, has_act_order, is_zp_float) && 
+		fp4_fe2m1<scalar_t>(kernel, q_type, thread_m_blocks, 
+			thread_n_blocks, thread_k_blocks, m_block_size_8, num_threads, 
+			has_zp, group_blocks, has_act_order, is_zp_float) && 
+		biggroup_fe4m3<scalar_t>(kernel, q_type, thread_m_blocks, 
+			thread_n_blocks, thread_k_blocks, m_block_size_8, num_threads, 
+			has_zp, group_blocks, has_act_order, is_zp_float) && 
+		act_u4b8<scalar_t>(kernel, q_type, thread_m_blocks, 
+			thread_n_blocks, thread_k_blocks, m_block_size_8, num_threads, 
+			has_zp, group_blocks, has_act_order, is_zp_float) && 
+		act_u8b128<scalar_t>(kernel, q_type, thread_m_blocks, 
+			thread_n_blocks, thread_k_blocks, m_block_size_8, num_threads, 
+			has_zp, group_blocks, has_act_order, is_zp_float);
 			
   if (std::is_same<scalar_t, half>::value) {
     if (false) {
