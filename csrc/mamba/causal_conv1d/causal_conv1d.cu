@@ -13,25 +13,13 @@
 #include <cub/block/block_load.cuh>
 #include <cub/block/block_store.cuh>
 
+#ifdef USE_ROCM
+    namespace cub = hipcub;
+#endif
+
 #include "static_switch.h"
 
-// Helper function to set the maximum dynamic shared memory attribute.
-// This function is defined at file scope so that the preprocessor directives
-// are not embedded inside a lambda.
-template <typename KernelT>
-void set_max_dynamic_shared_memory(KernelT kernel, int kSmemSize) {
-    if (kSmemSize >= 48 * 1024) {
-#ifndef USE_ROCM
-        C10_CUDA_CHECK(cudaFuncSetAttribute(
-            kernel, cudaFuncAttributeMaxDynamicSharedMemorySize, kSmemSize));
-#else
-        // There is a slight signature discrepancy in HIP and CUDA "FuncSetAttribute" function.
-        C10_CUDA_CHECK(cudaFuncSetAttribute(
-            (void *) kernel, cudaFuncAttributeMaxDynamicSharedMemorySize, kSmemSize));
-        std::cerr << "Warning (causal_conv1d fwd launch): attempting to set maxDynamicSharedMemorySize on an AMD GPU which is currently a non-op (in ROCm versions <= 6.1). This might lead to undefined behavior. \n" << std::endl;
-#endif
-    }
-}
+
 
 #define CHECK_SHAPE(x, ...) TORCH_CHECK(x.sizes() == torch::IntArrayRef({__VA_ARGS__}), #x " must have shape (" #__VA_ARGS__ ")")
 
@@ -516,7 +504,11 @@ void causal_conv1d_fwd_launch(ConvParamsBase &params, cudaStream_t stream) {
 
         auto kernel = &causal_conv1d_fwd_kernel<Ktraits>;
 
-		set_max_dynamic_shared_memory(kernel, kSmemSize);
+        if (kSmemSize >= 48 * 1024) {
+            C10_CUDA_CHECK(cudaFuncSetAttribute(
+                (void *) kernel, cudaFuncAttributeMaxDynamicSharedMemorySize, kSmemSize));
+            std::cerr << "Warning (causal_conv1d fwd launch): attempting to set maxDynamicSharedMemorySize on an AMD GPU which is currently a non-op (in ROCm versions <= 6.1). This might lead to undefined behavior. \n" << std::endl;
+        }
         kernel<<<grid, Ktraits::kNThreads, kSmemSize, stream>>>(params);
 
         C10_CUDA_KERNEL_LAUNCH_CHECK();

@@ -12,6 +12,7 @@ import sys
 from pathlib import Path
 from shutil import which
 
+import regex as re
 import torch
 from packaging.version import Version, parse
 from setuptools import Extension, setup
@@ -57,7 +58,7 @@ elif (sys.platform.startswith("linux") and torch.version.cuda is None
     # fallback to cpu
     VLLM_TARGET_DEVICE = "cpu"
 
-MAIN_CUDA_VERSION = "12.4"
+MAIN_CUDA_VERSION = "12.8"
 
 IS_WSL = ("microsoft-standard-WSL2" in platform.uname().release
           or "-Microsoft" in platform.uname().release)
@@ -479,7 +480,6 @@ class repackage_wheel(build_ext):
             # vllm_flash_attn python code:
             # Regex from
             #  `glob.translate('vllm/vllm_flash_attn/**/*.py', recursive=True)`
-            import re
             compiled_regex = re.compile(
                 r"vllm/vllm_flash_attn/(?:[^/.][^/]*/)*(?!\.)[^/]*\.py")
             file_members += list(
