@@ -1,2 +1,3 @@
 winloop
 triton-windows
+xformers
