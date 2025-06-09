@@ -17,7 +17,7 @@ Easy, fast, and cheap LLM serving for everyone
 
 ## vLLM for Windows
 
-This repository is a fork of vLLM and will be updated when new release versions of vLLM are published, until vLLM decides to support Windows officially (see https://github.com/vllm-project/vllm/issues/14981 / https://github.com/vllm-project/vllm/pull/14891).
+vLLM for Windows build & kernels. This repository will be updated when new versions of vLLM are released.
 
 **Don't open a new Issue to request a specific commit build. Wait for a new stable release.**
 
