@@ -410,9 +410,15 @@ class MPClient(EngineCoreClient):
                 self.stats_update_address = client_addresses.get(
                     "stats_update_address")
             else:
+                if platform.system() == "Windows":
+                    input_address_port = 45974
+                    output_address_port = 45975
+                else:
+                    input_address_port = 0
+                    output_address_port = 0
                 host = parallel_config.data_parallel_master_ip
-                input_address = get_engine_client_zmq_addr(local_only, host)
-                output_address = get_engine_client_zmq_addr(local_only, host)
+                input_address = get_engine_client_zmq_addr(local_only, host, input_address_port)
+                output_address = get_engine_client_zmq_addr(local_only, host, output_address_port)
 
             # Create input and output sockets.
             self.input_socket = self.resources.input_socket = make_zmq_socket(

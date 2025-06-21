@@ -3,6 +3,7 @@
 
 import argparse
 import multiprocessing
+import platform
 import time
 import weakref
 from collections import defaultdict
@@ -111,6 +112,10 @@ class ConstantList(Generic[T], Sequence):
 def get_engine_client_zmq_addr(local_only: bool,
                                host: str,
                                port: int = 0) -> str:
+    if platform.system() == "Windows":
+        host = host if not local_only and host is not None and len(host) > 0 else "127.0.0.1"
+        port = port if port >= 1024 else 45975
+        return f"tcp://{host}:{port}"
     return get_open_zmq_ipc_path() if local_only else (get_tcp_uri(
         host, port or get_open_port()))
 
@@ -469,7 +474,7 @@ def wait_for_engine_startup(
     poller = zmq.Poller()
     poller.register(handshake_socket, zmq.POLLIN)
 
-    if proc_manager is not None:
+    if proc_manager is not None and platform.system() != "Windows":
         for sentinel in proc_manager.sentinels():
             poller.register(sentinel, zmq.POLLIN)
     if coord_process is not None:
