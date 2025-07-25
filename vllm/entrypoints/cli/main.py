@@ -7,22 +7,6 @@ to avoid certain eager import breakage.'''
 from __future__ import annotations
 
 import importlib.metadata
-import os
-import platform
-import signal
-import sys
-
-
-def register_signal_handlers():
-
-    def signal_handler(sig, frame):
-        sys.exit(0)
-
-    signal.signal(signal.SIGINT, signal_handler)
-    if platform.system() == "Windows":
-        signal.signal(signal.SIGTERM, signal_handler)
-    else:
-        signal.signal(signal.SIGTSTP, signal_handler)
 
 
 def main():

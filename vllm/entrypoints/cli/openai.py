@@ -59,7 +59,7 @@ def chat(system_prompt: str | None, model_name: str, client: OpenAI) -> None:
         try:
             input_message = input("> ")
         except EOFError:
-            return
+            break
         conversation.append({"role": "user", "content": input_message})
 
         chat_completion = client.chat.completions.create(model=model_name,
@@ -122,7 +122,7 @@ class ChatCommand(CLISubcommand):
             try:
                 input_message = input("> ")
             except EOFError:
-                return
+                break
             conversation.append({"role": "user", "content": input_message})
 
             chat_completion = client.chat.completions.create(
@@ -174,7 +174,10 @@ class CompleteCommand(CLISubcommand):
 
         print("Please enter prompt to complete:")
         while True:
-            input_prompt = input("> ")
+            try:
+                input_prompt = input("> ")
+            except EOFError:
+                break
             completion = client.completions.create(model=model_name,
                                                    prompt=input_prompt)
             output = completion.choices[0].text
