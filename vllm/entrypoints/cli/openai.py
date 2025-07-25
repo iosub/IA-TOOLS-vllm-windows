@@ -1,19 +1,22 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
-# Commands that act as an interactive OpenAI API client
+
+from __future__ import annotations
 
 import argparse
 import os
 import platform
 import signal
 import sys
-from typing import Optional
+from typing import TYPE_CHECKING
 
 from openai import OpenAI
 from openai.types.chat import ChatCompletionMessageParam
 
 from vllm.entrypoints.cli.types import CLISubcommand
-from vllm.utils import FlexibleArgumentParser
+
+if TYPE_CHECKING:
+    from vllm.utils import FlexibleArgumentParser
 
 
 def _register_signal_handlers():
@@ -46,8 +49,7 @@ def _interactive_cli(args: argparse.Namespace) -> tuple[str, OpenAI]:
     return model_name, openai_client
 
 
-def chat(system_prompt: Optional[str], model_name: str,
-         client: OpenAI) -> None:
+def chat(system_prompt: str | None, model_name: str, client: OpenAI) -> None:
     conversation: list[ChatCompletionMessageParam] = []
     if system_prompt is not None:
         conversation.append({"role": "system", "content": system_prompt})
@@ -96,10 +98,7 @@ def _add_query_options(
 
 class ChatCommand(CLISubcommand):
     """The `chat` subcommand for the vLLM CLI. """
-
-    def __init__(self):
-        self.name = "chat"
-        super().__init__()
+    name = "chat"
 
     @staticmethod
     def cmd(args: argparse.Namespace) -> None:
@@ -161,10 +160,7 @@ class ChatCommand(CLISubcommand):
 
 class CompleteCommand(CLISubcommand):
     """The `complete` subcommand for the vLLM CLI. """
-
-    def __init__(self):
-        self.name = "complete"
-        super().__init__()
+    name = 'complete'
 
     @staticmethod
     def cmd(args: argparse.Namespace) -> None:
