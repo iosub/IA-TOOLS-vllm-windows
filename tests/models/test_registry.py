@@ -24,16 +24,9 @@ from .registry import HF_EXAMPLE_MODELS
 
 @pytest.mark.parametrize("model_arch", ModelRegistry.get_supported_archs())
 def test_registry_imports(model_arch):
-
-    # Llama4ForCausalLM does not have a standalone model
-    if model_arch == "Llama4ForCausalLM":
-        return
-
-    model_info = HF_EXAMPLE_MODELS.get_hf_info(model_arch)
-    model_info.check_transformers_version(on_fail="skip")
-
     # Ensure all model classes can be imported successfully
-    model_cls, _ = ModelRegistry.resolve_model_cls(model_arch)
+    model_cls = ModelRegistry._try_load_model_cls(model_arch)
+    assert model_cls is not None
 
     if model_arch in _SPECULATIVE_DECODING_MODELS:
         return  # Ignore these models which do not have a unified format
@@ -61,14 +54,16 @@ def test_registry_imports(model_arch):
     ("XLMRobertaForSequenceClassification", False, False, True),
 ])
 def test_registry_model_property(model_arch, is_mm, init_cuda, is_ce):
-    assert ModelRegistry.is_multimodal_model(model_arch) is is_mm
+    model_info = ModelRegistry._try_inspect_model_cls(model_arch)
+    assert model_info is not None
 
-    assert ModelRegistry.is_cross_encoder_model(model_arch) is is_ce
+    assert model_info.supports_multimodal is is_mm
+    assert model_info.supports_cross_encoding is is_ce
 
     if init_cuda and current_platform.is_cuda_alike():
         assert not torch.cuda.is_initialized()
 
-        ModelRegistry.resolve_model_cls(model_arch)
+        ModelRegistry._try_load_model_cls(model_arch)
         if not torch.cuda.is_initialized():
             warnings.warn(
                 "This model no longer initializes CUDA on import. "
@@ -87,12 +82,15 @@ def test_registry_model_property(model_arch, is_mm, init_cuda, is_ce):
         ("Qwen2VLForConditionalGeneration", True, True),
     ])
 def test_registry_is_pp(model_arch, is_pp, init_cuda):
-    assert ModelRegistry.is_pp_supported_model(model_arch) is is_pp
+    model_info = ModelRegistry._try_inspect_model_cls(model_arch)
+    assert model_info is not None
+
+    assert model_info.supports_pp is is_pp
 
     if init_cuda and current_platform.is_cuda_alike():
         assert not torch.cuda.is_initialized()
 
-        ModelRegistry.resolve_model_cls(model_arch)
+        ModelRegistry._try_load_model_cls(model_arch)
         if not torch.cuda.is_initialized():
             warnings.warn(
                 "This model no longer initializes CUDA on import. "
@@ -101,11 +99,8 @@ def test_registry_is_pp(model_arch, is_pp, init_cuda):
 
 
 def test_hf_registry_coverage():
-    untested_archs = set(ModelRegistry.get_supported_archs() -
-                         HF_EXAMPLE_MODELS.get_supported_archs())
-
-    # Llama4ForCausalLM does not have a standalone model
-    untested_archs.discard("Llama4ForCausalLM")
+    untested_archs = (ModelRegistry.get_supported_archs() -
+                      HF_EXAMPLE_MODELS.get_supported_archs())
 
     assert not untested_archs, (
         "Please add the following architectures to "
