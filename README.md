@@ -24,14 +24,14 @@ vLLM for Windows build & kernels. This repository will be updated when new versi
 
 **Don't open Issues for general vLLM questions or non Windows related problems. Only Windows specific issues.** Any Issue opened that is not Windows specific will be closed automatically.
 
-**Don't request a wheel for your specific environment.** Currently, the only wheels I will publish are for Python 3.12 + CUDA 12.4 + torch 2.6.0. If you have another versions, build your own wheel from source by following the instructions below.
+**Don't request a wheel for your specific environment.** If your environment does not match the released wheel, build your own wheel from source by following the [instructions below](https://github.com/SystemPanic/vllm-windows?tab=readme-ov-file#building-from-source).
 
 ### Windows instructions:
 
 #### Installing an existing release wheel:
 
-1. Ensure that you have the correct Python and CUDA version of the wheel. The Python and CUDA version of the wheel is specified in the release version
-2. Download the wheel from the release version of your preference
+1. Ensure that you have the correct Python, Torch and CUDA version of the wheel. The Python, Torch and CUDA version of the wheel is specified in the release version.
+2. Download the wheel from the release version of your preference (latest wheel [here](https://github.com/SystemPanic/vllm-windows/releases/latest)).
 3. Install it with ```pip install DOWNLOADED_WHEEL_PATH```
 
 #### Building from source:
