@@ -2,6 +2,7 @@
 # SPDX-FileCopyrightText: Copyright contributors to the vLLM project
 
 import os
+import platform
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 import torch
@@ -27,8 +28,11 @@ class UniProcExecutor(ExecutorBase):
         """
         self.driver_worker = WorkerWrapperBase(vllm_config=self.vllm_config,
                                                rpc_rank=0)
-        distributed_init_method = get_distributed_init_method(
-            get_ip(), get_open_port())
+        if platform.system() == "Windows":
+            distributed_init_method = "file:///c:/Users/SystemPanic/Desktop/vllm_distributed_method_file"
+        else:
+            distributed_init_method = get_distributed_init_method(
+                get_ip(), get_open_port())
         local_rank = 0
         # set local rank as the device index if specified
         device_info = self.vllm_config.device_config.device.__str__().split(
@@ -70,6 +74,10 @@ class UniProcExecutor(ExecutorBase):
         ReconfigureRankType.SHUTDOWN_CURRENT_RANK:
             self.shutdown()
         return
+
+    def shutdown(self) -> None:
+        if worker := self.driver_worker:
+            worker.shutdown()
 
 
 UniProcExecutorAsync = UniProcExecutor
