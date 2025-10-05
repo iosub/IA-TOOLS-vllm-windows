@@ -42,10 +42,10 @@ rmdir /s /q .deps
 **IMPORTANTE**: Activar venv primero
 ```cmd
 .\.venv\Scripts\activate.ps1
-uv pip install torch==2.7.1+cu126 --index-url https://download.pytorch.org/whl/cu126
 uv pip install Z_IOSU/vllm-0.10.2+cu124-cp312-cp312-win_amd64.whl --force-reinstall
+uv pip install torch==2.7.1+cu126 torchaudio==2.7.1+cu126 torchvision==0.22.1+cu126 --index-url https://download.pytorch.org/whl/cu126
 ```
-**Nota**: Este comando instala exitosamente vLLM 0.10.2+cu124 evitando problemas de compilación.
+**Nota**: Este workflow instala exitosamente vLLM 0.10.2+cu124 con todas las dependencias compatibles.
 
 #### 6. Build desde source con uv
 ```cmd
@@ -57,11 +57,29 @@ uv pip install . --no-build-isolation
 
 ### Pasos de troubleshooting recomendados:
 
-1. **ACTIVAR VENV** (CRÍTICO): `.\.venv\Scripts\activate.ps1`
-2. **Limpiar entorno**
-3. **Configurar Visual Studio**
-4. **Verificar CUDA compatibility**
-5. **Usar wheel pre-construido si build falla**
+1. **ACTIVAR VENV** (CRÍTICO): `.\venv\Scripts\activate.ps1`
+2. **Usar wheel pre-construido PRIMERO** (✅ EXITOSO)
+3. **🔥 RENOMBRAR CARPETA vllm LOCAL** (CRÍTICO): `ren vllm vllm_source_temp`
+4. **Limpiar entorno** (solo si build desde source)
+5. **Configurar Visual Studio** (solo si build desde source)
+6. **Verificar CUDA compatibility** (solo si build desde source)
+
+**IMPORTANTE**: El paso 3 es OBLIGATORIO para evitar conflictos de importación.
+
+#### 7. Error: ModuleNotFoundError: No module named 'vllm._C' 🔥
+**Problema crítico**: Python importa el código fuente local en lugar de la wheel instalada
+**Síntoma**: `vllm serve` falla con error de módulo _C faltante
+
+**Solución OBLIGATORIA**:
+```cmd
+ren vllm vllm_source_temp
+python -c "import vllm; print('Path correcto:', vllm.__file__)"
+vllm --help
+```
+
+#### 8. Error: RuntimeError: Unknown runtime environment
+**Problema**: Al intentar `uv pip install . --no-build-isolation` después de instalar wheel
+**Solución**: Este error es normal si ya tienes vLLM instalado de la wheel. **NO necesitas compilar desde source.**
 
 ### Comandos de diagnóstico
 ```cmd
@@ -71,8 +89,25 @@ nvcc --version
 python -c "import torch; print(torch.cuda.is_available(), torch.version.cuda)"
 ```
 
-### Verificar instalación exitosa
+### ✅ Verificar instalación exitosa
 ```cmd
-python -c "import vllm; print('vLLM instalado correctamente:', vllm.__version__)"
+python -c "import vllm; print('✅ vLLM instalado correctamente:', vllm.__version__)"
 vllm --help
+vllm serve "prithivMLmods/Qwen2-VL-OCR-2B-Instruct" --help
+```
+
+### 🎉 INSTALACIÓN Y EJECUCIÓN EXITOSA
+La wheel pre-construida funciona perfectamente:
+- ✅ vLLM 0.10.2 instalado y funcionando
+- ✅ CLI funcional con todos los comandos  
+- ✅ Servidor API iniciado exitosamente
+- ✅ Modelo Qwen2-VL-OCR-2B-Instruct cargando
+- ✅ CUDA detectado automáticamente
+- ✅ Windows compatibility confirmado
+
+**Comando exitoso final**:
+```cmd
+.\.venv\Scripts\activate.ps1
+ren vllm vllm_source_temp
+python -m vllm.entrypoints.cli.main serve "prithivMLmods/Qwen2-VL-OCR-2B-Instruct" --max-model-len 2048
 ```
