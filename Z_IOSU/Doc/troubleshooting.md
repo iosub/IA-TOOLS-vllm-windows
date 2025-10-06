@@ -77,7 +77,38 @@ python -c "import vllm; print('Path correcto:', vllm.__file__)"
 vllm --help
 ```
 
-#### 8. Error: RuntimeError: Unknown runtime environment
+#### 8. Error: PermissionError [WinError 5] Access is denied (Triton) 🔥
+**Problema**: Triton oficial no puede compilar kernels CUDA en Windows
+**Síntoma**: `PermissionError` en `triton\\runtime\\build.py`
+
+**Solución A - Backend PyTorch SDPA (MÁS ESTABLE)**:
+```powershell
+$env:VLLM_ATTENTION_BACKEND="TORCH_SDPA"
+python -m vllm.entrypoints.cli.main serve "MODEL_NAME" --max-model-len 2048
+```
+
+**Solución A2 - Triton Windows**:
+```cmd
+uv pip install https://huggingface.co/madbuda/triton-windows-builds/resolve/main/triton-3.0.0-cp312-cp312-win_amd64.whl --force-reinstall
+```
+
+**Solución B - Configurar entorno Triton**:
+```cmd
+set TRITON_CACHE_DIR=%TEMP%\triton_cache
+set CUDA_CACHE_DISABLE=0
+mkdir %TEMP%\triton_cache 2>nul
+```
+
+**Solución C - Ejecutar como Administrador**:
+- Abrir PowerShell como Administrador
+- Ejecutar el comando vLLM desde ahí
+
+**Solución D - Usar V0**: Si todo lo anterior falla
+```cmd
+python -m vllm.entrypoints.cli.main serve "MODEL_NAME" --disable-v1
+```
+
+#### 9. Error: RuntimeError: Unknown runtime environment
 **Problema**: Al intentar `uv pip install . --no-build-isolation` después de instalar wheel
 **Solución**: Este error es normal si ya tienes vLLM instalado de la wheel. **NO necesitas compilar desde source.**
 
@@ -105,9 +136,22 @@ La wheel pre-construida funciona perfectamente:
 - ✅ CUDA detectado automáticamente
 - ✅ Windows compatibility confirmado
 
-**Comando exitoso final**:
-```cmd
+**Comando exitoso final con V1 funcionando**:
+```powershell
 .\.venv\Scripts\activate.ps1
 ren vllm vllm_source_temp
+uv pip install https://huggingface.co/madbuda/triton-windows-builds/resolve/main/triton-3.0.0-cp312-cp312-win_amd64.whl --force-reinstall
+$env:TRITON_CACHE_DIR="$env:TEMP\triton_cache"
+mkdir "$env:TEMP\triton_cache" -Force
 python -m vllm.entrypoints.cli.main serve "prithivMLmods/Qwen2-VL-OCR-2B-Instruct" --max-model-len 2048
 ```
+
+### 🚀 V1 FUNCIONANDO PERFECTAMENTE:
+- ✅ **V1 LLM engine (v0.10.2)** inicializado exitosamente
+- ✅ **Triton 3.0.0 Windows** compatible con caché configurado
+- ✅ **Modelo Qwen2VL** resuelto y cargando
+- ✅ **Chunked prefill** habilitado (mejor rendimiento)
+- ✅ **Prefix caching** activado (optimización de memoria)
+- ✅ **Compilation level 3** (máximo rendimiento)
+- ✅ **CUDA graph** con múltiples tamaños de captura
+- ✅ **Sin errores de permisos** de Triton
