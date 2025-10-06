@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test script para probar vLLM offline con un modelo de texto simple
+Test script simple para probar vLLM offline con un modelo básico
 usando configuraciones compatibles con Windows
 """
 
@@ -12,36 +12,42 @@ from vllm import LLM, SamplingParams
 os.environ["VLLM_WORKER_MULTIPROC_METHOD"] = "spawn"
 os.environ["USE_LIBUV"] = "0"
 
-def test_vllm_offline():
-    """Test vLLM with offline API"""
+def test_vllm_simple():
+    """Test vLLM with a simple, well-supported model"""
     
-    print("🚀 Iniciando vLLM con API offline...")
+    print("🚀 Iniciando vLLM con modelo simple...")
     
     try:
-        # Crear instancia LLM con configuración Windows-compatible
-        print("📋 Configurando modelo...")
+        # Verificar CUDA
+        if torch.cuda.is_available():
+            print(f"✅ CUDA disponible: {torch.cuda.get_device_name(0)}")
+        else:
+            print("⚠️  CUDA no disponible, usando CPU")
+        
+        # Crear instancia LLM con modelo simple
+        print("📋 Configurando modelo GPT-2...")
         llm = LLM(
-            model="microsoft/DialoGPT-medium",
-            max_model_len=512,  # Reducido para evitar problemas de memoria
+            model="gpt2",  # Modelo simple y bien soportado
+            max_model_len=256,  # Muy pequeño para test
             enforce_eager=True,  # Deshabilitar CUDA graphs
-            gpu_memory_utilization=0.7,
+            gpu_memory_utilization=0.5,
             disable_custom_all_reduce=True,
             disable_log_stats=True,
         )
         
         print("✅ Modelo cargado exitosamente!")
         
-        # Configurar sampling parameters
+        # Configurar sampling parameters conservadores
         sampling_params = SamplingParams(
-            temperature=0.7,
+            temperature=0.8,
             top_p=0.9,
-            max_tokens=100
+            max_tokens=50  # Pocos tokens para test rápido
         )
         
-        # Test prompt simple de texto (inglés para DialoGPT)
+        # Test prompt muy simple
         prompts = [
-            "Hello, how are you today?",
-            "What is artificial intelligence?",
+            "Once upon a time",
+            "The weather today is",
         ]
         
         print("💬 Generando respuestas...")
@@ -63,4 +69,4 @@ def test_vllm_offline():
         traceback.print_exc()
 
 if __name__ == "__main__":
-    test_vllm_offline()
+    test_vllm_simple()

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Test script para probar vLLM offline con un modelo de texto simple
+Test script para probar vLLM offline con modelo multimodal
 usando configuraciones compatibles con Windows
 """
 
@@ -11,22 +11,31 @@ from vllm import LLM, SamplingParams
 # Configurar variables de entorno específicas para Windows
 os.environ["VLLM_WORKER_MULTIPROC_METHOD"] = "spawn"
 os.environ["USE_LIBUV"] = "0"
+# Usar attention backend compatible
+os.environ["VLLM_ATTENTION_BACKEND"] = "FLASHINFER"
 
-def test_vllm_offline():
-    """Test vLLM with offline API"""
+def test_vllm_text_model():
+    """Test vLLM with a text generation model"""
     
-    print("🚀 Iniciando vLLM con API offline...")
+    print("🚀 Iniciando vLLM con modelo de texto...")
     
     try:
-        # Crear instancia LLM con configuración Windows-compatible
-        print("📋 Configurando modelo...")
+        # Verificar CUDA
+        if torch.cuda.is_available():
+            print(f"✅ CUDA disponible: {torch.cuda.get_device_name(0)}")
+        else:
+            print("⚠️  CUDA no disponible, usando CPU")
+        
+        # Crear instancia LLM con modelo de texto bien soportado
+        print("📋 Configurando modelo Llama2...")
         llm = LLM(
-            model="microsoft/DialoGPT-medium",
-            max_model_len=512,  # Reducido para evitar problemas de memoria
+            model="meta-llama/Llama-2-7b-chat-hf",  # Modelo de texto bien soportado
+            max_model_len=1024,  
             enforce_eager=True,  # Deshabilitar CUDA graphs
             gpu_memory_utilization=0.7,
             disable_custom_all_reduce=True,
             disable_log_stats=True,
+            trust_remote_code=True,
         )
         
         print("✅ Modelo cargado exitosamente!")
@@ -38,10 +47,10 @@ def test_vllm_offline():
             max_tokens=100
         )
         
-        # Test prompt simple de texto (inglés para DialoGPT)
+        # Test prompts en español
         prompts = [
-            "Hello, how are you today?",
-            "What is artificial intelligence?",
+            "¿Cuál es la capital de España?",
+            "Explica qué es la inteligencia artificial en una frase.",
         ]
         
         print("💬 Generando respuestas...")
@@ -63,4 +72,4 @@ def test_vllm_offline():
         traceback.print_exc()
 
 if __name__ == "__main__":
-    test_vllm_offline()
+    test_vllm_text_model()
