@@ -106,9 +106,11 @@ def test_larger_models():
                 print("-" * 50)
             
             # Estadísticas de memoria
+            memory_gb = "N/A"
             if torch.cuda.is_available():
                 memory_allocated = torch.cuda.memory_allocated() / 1024**3
                 memory_reserved = torch.cuda.memory_reserved() / 1024**3
+                memory_gb = f"{memory_allocated:.2f}"
                 print(f"\n📊 Memoria GPU utilizada: {memory_allocated:.2f} GB")
                 print(f"📊 Memoria GPU reservada: {memory_reserved:.2f} GB")
             
@@ -116,7 +118,7 @@ def test_larger_models():
                 "name": model_name,
                 "description": description,
                 "max_len": max_len,
-                "memory_gb": memory_allocated if torch.cuda.is_available() else "N/A"
+                "memory_gb": memory_gb
             })
             
             print(f"🎉 Test con {model_name} completado exitosamente!")
