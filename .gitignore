@@ -225,3 +225,10 @@ Z_IOSU/triton-3.0.0-cp312-cp312-win_amd64.whl
 
 # Ignore all wheel files in Z_IOSU directory
 Z_IOSU/*.whl
+
+# Ignore large model files
+Z_IOSU/modelos/*.gguf
+Z_IOSU/modelos/*.bin
+Z_IOSU/modelos/*.safetensors
+*.gguf
+*.bin
