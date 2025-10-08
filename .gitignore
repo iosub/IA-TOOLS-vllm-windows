@@ -221,3 +221,7 @@ ep_kernels_workspace/
 
 local_torch_build.py
 Z_IOSU/vllm-0.10.2+cu124-cp312-cp312-win_amd64.whl
+Z_IOSU/triton-3.0.0-cp312-cp312-win_amd64.whl
+
+# Ignore all wheel files in Z_IOSU directory
+Z_IOSU/*.whl
